@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GreenGardens</title>
+    <title>Katak Studio</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -29,6 +29,34 @@
         .btn-outline {
             @apply border border-green-500 text-green-500 hover:bg-green-500 hover:text-white px-6 py-2 rounded-lg font-medium transition-all duration-200;
         }
+        .search-container {
+            position: relative;
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .search-result-item:hover {
+            background-color: #f9fafb;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -39,12 +67,50 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center mr-2">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
-                            </svg>
+                        <div class="w-12 h-12 flex items-center justify-center mr-2">
+                            <img src="Images/logo_kodok1.png" alt="Logo Katak Studio">
                         </div>
-                        <span class="text-xl font-bold text-gray-900">GreenGardens</span>
+                        <span class="text-xl font-bold text-gray-900">Katak Studio</span>
+                    </div>
+                </div>
+
+                <!-- Search Bar (Desktop) -->
+                <div class="hidden lg:block flex-1 max-w-lg mx-8">
+                    <div class="search-container">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="searchInput"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500" 
+                                placeholder="Search products, services..."
+                                oninput="handleSearch(this.value)"
+                                onfocus="showSearchResults()"
+                            >
+                        </div>
+                        <!-- Search Results Dropdown -->
+                        <div id="searchResults" class="search-results hidden">
+                            <div class="search-result-item">
+                                <div class="font-medium text-gray-900">Garden Design Services</div>
+                                <div class="text-sm text-gray-500">Professional landscape design</div>
+                            </div>
+                            <div class="search-result-item">
+                                <div class="font-medium text-gray-900">Topiary Plants</div>
+                                <div class="text-sm text-gray-500">Custom shaped garden plants</div>
+                            </div>
+                            <div class="search-result-item">
+                                <div class="font-medium text-gray-900">Garden Maintenance</div>
+                                <div class="text-sm text-gray-500">Regular garden care services</div>
+                            </div>
+                            <div class="search-result-item">
+                                <div class="font-medium text-gray-900">Indoor Plants</div>
+                                <div class="text-sm text-gray-500">Beautiful plants for your home</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -53,7 +119,7 @@
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#" class="nav-link font-semibold text-green-600">Home</a>
                         <a href="#" class="nav-link">About</a>
-                        <a href="#" class="nav-link">Services</a>
+                        <a href="#" class="nav-link">Portfolio</a>
                         <a href="#" class="nav-link">Products</a>
                         <a href="#" class="nav-link">Blog</a>
                         <a href="#" class="nav-link">Contact</a>
@@ -62,29 +128,19 @@
 
                 <!-- Right Side -->
                 <div class="flex items-center space-x-4">
-                    <!-- Search Icon -->
-                    <button class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Search Icon for Mobile -->
+                    <button onclick="toggleMobileSearch()" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </button>
 
-                    <!-- Currency -->
-                    <span class="text-gray-600 text-sm">€</span>
-
-                    <!-- Cart -->
-                    <button class="text-gray-500 hover:text-gray-700 relative">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m2.5-5h5m-5 0v5"></path>
-                        </svg>
-                        <span class="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                    </button>
-
-                    <!-- Authentication -->
-                    @auth
-                        <div class="relative">
+                    <!-- Authentication Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <!-- User is logged in (simulate with hidden class) -->
+                        <div id="loggedInSection" class="relative hidden">
                             <button onclick="toggleDropdown()" class="btn-primary flex items-center space-x-2">
-                                <span>{{ Auth::user()->name }}</span>
+                                <span>John Doe</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
@@ -92,19 +148,20 @@
                             
                             <!-- Dropdown Menu -->
                             <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Logout
-                                    </button>
-                                </form>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Logout
+                                </button>
                             </div>
                         </div>
-                    @else
-                        <a href="{{ route('login') }}" class="btn-outline">Login</a>
-                    @endauth
+
+                        <!-- Guest Section (Default visible) -->
+                        <div id="guestSection" class="flex items-center space-x-2">
+                            <a href="#" onclick="showLoginForm()" class="btn-outline">Login</a>
+                            <a href="#" onclick="showSignupForm()" class="btn-primary">Sign Up</a>
+                        </div>
+                    </div>
 
                     <!-- Mobile menu button -->
                     <div class="md:hidden">
@@ -117,15 +174,41 @@
                 </div>
             </div>
 
+            <!-- Mobile Search Bar -->
+            <div id="mobileSearch" class="hidden lg:hidden px-4 pb-4">
+                <div class="search-container">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="mobileSearchInput"
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500" 
+                            placeholder="Search products, services..."
+                            oninput="handleSearch(this.value)"
+                        >
+                    </div>
+                </div>
+            </div>
+
             <!-- Mobile Navigation Menu -->
             <div id="mobileMenu" class="hidden md:hidden">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <a href="#" class="nav-link block font-semibold text-green-600">Home</a>
                     <a href="#" class="nav-link block">About</a>
-                    <a href="#" class="nav-link block">Services</a>
+                    <a href="#" class="nav-link block">Portfolio</a>
                     <a href="#" class="nav-link block">Products</a>
                     <a href="#" class="nav-link block">Blog</a>
                     <a href="#" class="nav-link block">Contact</a>
+                    <div class="pt-4 pb-3 border-t border-gray-200">
+                        <div class="flex items-center px-3 space-x-3">
+                            <button onclick="showLoginForm()" class="btn-outline w-full">Login</button>
+                            <button onclick="showSignupForm()" class="btn-primary w-full">Sign Up</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -187,11 +270,165 @@
         </section>
     </main>
 
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Login to Katak Studio</h3>
+                    <button onclick="closeModal('loginModal')" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label for="loginEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="loginEmail" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="mb-6">
+                        <label for="loginPassword" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="loginPassword" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button type="submit" class="btn-primary w-full">Login</button>
+                    </div>
+                    <p class="mt-4 text-center text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="#" onclick="showSignupForm(); closeModal('loginModal')" class="text-green-600 hover:text-green-500">Sign up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Join Katak Studio</h3>
+                    <button onclick="closeModal('signupModal')" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form onsubmit="handleSignup(event)">
+                    <div class="mb-4">
+                        <label for="signupName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="signupName" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="signupEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="signupEmail" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="mb-6">
+                        <label for="signupPassword" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="signupPassword" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button type="submit" class="btn-primary w-full">Sign Up</button>
+                    </div>
+                    <p class="mt-4 text-center text-sm text-gray-600">
+                        Already have an account? 
+                        <a href="#" onclick="showLoginForm(); closeModal('signupModal')" class="text-green-600 hover:text-green-500">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
+        // Search functionality
+        function handleSearch(query) {
+            console.log('Searching for:', query);
+            // Here you would typically make an API call to search your database
+            // For now, we'll just show/hide the dropdown based on whether there's a query
+            const searchResults = document.getElementById('searchResults');
+            if (query.length > 0) {
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.classList.add('hidden');
+            }
+        }
+
+        function showSearchResults() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            if (searchInput.value.length > 0) {
+                searchResults.classList.remove('hidden');
+            }
+        }
+
+        function toggleMobileSearch() {
+            const mobileSearch = document.getElementById('mobileSearch');
+            mobileSearch.classList.toggle('hidden');
+        }
+
+        // User authentication functions
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function showSignupForm() {
+            document.getElementById('signupModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simulate login process
+            console.log('Login attempt:', { email, password });
+            
+            // For demo purposes, simulate successful login
+            setTimeout(() => {
+                alert('Login successful!');
+                closeModal('loginModal');
+                // Switch to logged in state
+                document.getElementById('guestSection').classList.add('hidden');
+                document.getElementById('loggedInSection').classList.remove('hidden');
+            }, 1000);
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            // Simulate signup process
+            console.log('Signup attempt:', { name, email, password });
+            
+            // For demo purposes, simulate successful signup
+            setTimeout(() => {
+                alert('Account created successfully!');
+                closeModal('signupModal');
+                // Switch to logged in state
+                document.getElementById('guestSection').classList.add('hidden');
+                document.getElementById('loggedInSection').classList.remove('hidden');
+            }, 1000);
+        }
+
+        function logout() {
+            // Simulate logout
+            document.getElementById('loggedInSection').classList.add('hidden');
+            document.getElementById('guestSection').classList.remove('hidden');
+            document.getElementById('userDropdown').classList.add('hidden');
+            alert('Logged out successfully!');
         }
 
         function toggleMobileMenu() {
@@ -199,15 +436,35 @@
             mobileMenu.classList.toggle('hidden');
         }
 
-        // Close dropdown when clicking outside
+        // Close dropdowns when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('userDropdown');
+            const searchResults = document.getElementById('searchResults');
             const button = event.target.closest('button');
             
+            // Close user dropdown
             if (!button || !button.onclick || button.onclick.toString().indexOf('toggleDropdown') === -1) {
                 dropdown.classList.add('hidden');
             }
+
+            // Close search results
+            if (!event.target.closest('.search-container')) {
+                searchResults.classList.add('hidden');
+            }
         });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const loginModal = document.getElementById('loginModal');
+            const signupModal = document.getElementById('signupModal');
+            
+            if (event.target === loginModal) {
+                closeModal('loginModal');
+            }
+            if (event.target === signupModal) {
+                closeModal('signupModal');
+            }
+        }
     </script>
 </body>
 </html>
